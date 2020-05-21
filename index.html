@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <title>Canvas Draw</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .tools {
+      width: 100%;
+      background: #222;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .tools ul {
+      display: flex;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .tools ul li {
+      width: 60px;
+      height: 60px;
+      margin: 0 10px;
+      list-style: none;
+      border-radius: 50px;
+      box-sizing: border-box;
+      border: 2px dashed #fff;
+      transition: .3s;
+      opacity: .45;
+      transform: scale(.8);
+    }
+
+    .tools ul li.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .storke-red {
+      background-color: #ec0f47;
+    }
+
+    .storke-orange {
+      background-color: #ee6b3b;
+    }
+
+    .storke-yellow {
+      background-color: #fbbf54;
+    }
+
+    .storke-green {
+      background-color: #15c286;
+    }
+
+    .storke-blue {
+      background-color: #038ec9;
+    }
+
+    .storke-indigo {
+      background-color: #9C27B0;
+    }
+
+    .storke-purple {
+      background-color: #673AB7;
+    }
+
+    .storke-black {
+      background-color: #333;
+    }
+
+    .storke-white {
+      background-color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tools">
+    <ul>
+    </ul>
+  </div>
+  <canvas id="draw"></canvas>
+
+  <script>
+    $(function () {
+      const newCanvas = document.querySelector('#draw');
+      const ctx = newCanvas.getContext('2d');
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      let storkeColor = [
+        {
+          color: 'red',
+          code: '#ec0f47'
+        },
+        {
+          color: 'orange',
+          code: '#ee6b3b'
+        },
+        {
+          color: 'yellow',
+          code: '#fbbf54'
+        },
+        {
+          color: 'green',
+          code: '#15c286'
+        },
+        {
+          color: 'blue',
+          code: '#038ec9'
+        },
+        {
+          color: 'indigo',
+          code: '#9C27B0'
+        },
+        {
+          color: 'purple',
+          code: '#673AB7'
+        },
+        {
+          color: 'black',
+          code: '#000'
+        },
+        {
+          color: 'white',
+          code: '#fff'
+        }
+      ];
+
+      let canvasApp = {
+        setting() {
+          newCanvas.width = window.innerWidth;
+          newCanvas.height = window.innerHeight;
+          ctx.strokeStyle = '#00bcd4';
+          ctx.lineJoin = 'round';
+          ctx.lineCap = 'round';
+          ctx.lineWidth = 20;
+          this.addEvents();
+          return this;
+        },
+        chooseColor() {
+          this.str = '';
+          storkeColor.forEach(item => {
+            this.str += `<li data-color="${item.color}" class="storke-${item.color}"></li>`
+          })
+          $('.tools ul').append(this.str);
+
+          $('ul li').on('click', function () {
+            $(this).addClass('active').siblings().removeClass('active');
+            let chosen = storkeColor.filter((item) => {
+              return item.color === $(this).data('color')
+            })
+            ctx.strokeStyle = chosen[0].code;
+          }).eq(7).click();
+        },
+        addEvents() {
+          newCanvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            ctx.beginPath();
+            lastX = e.pageX;
+            lastY = e.pageY;
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.pageX, e.pageY);
+            ctx.stroke();
+          });
+          newCanvas.addEventListener('mousemove', (e) => this.draw(e));
+          newCanvas.addEventListener('mouseup', () => isDrawing = false);
+        },
+        draw(e) {
+          if (!isDrawing) return;
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(e.pageX, e.pageY);
+          ctx.stroke();
+          lastX = e.pageX;
+          lastY = e.pageY;
+        }
+      }
+      canvasApp.setting().chooseColor();
+      //console.log(canvasApp)
+    })
+
+
+
+
+
+
+    //original
+    /* const newCanvas = document.querySelector('#draw');
+    const ctx = newCanvas.getContext('2d');
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    newCanvas.width = window.innerWidth;
+    newCanvas.height = window.innerHeight;
+
+    ctx.strokeStyle = '#00bcd4';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 20;
+
+    newCanvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      ctx.beginPath();
+      [lastX, lastY] = [e.pageX, e.pageY];
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(e.pageX, e.pageY);
+      ctx.stroke();
+    });
+    newCanvas.addEventListener('mousemove', draw);
+    newCanvas.addEventListener('mouseup', () => isDrawing = false);
+
+    function draw(e) {
+      if (!isDrawing) return;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(e.pageX, e.pageY);
+      ctx.stroke();
+      [lastX, lastY] = [e.pageX, e.pageY];
+    } */
+  </script>
+</body>
+
+</html>
